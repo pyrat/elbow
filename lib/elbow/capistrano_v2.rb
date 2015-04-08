@@ -12,12 +12,12 @@ Capistrano::Configuration.instance(:must_exist).load do
     #cname = all_cnames.find { |c| c.name == "#{name}."}.cname[0..-2]
 
     aws_region= fetch(:aws_region, 'us-east-1')
-    AWS.config(:access_key_id => fetch(:aws_access_key_id),
+    config = {:access_key_id => fetch(:aws_access_key_id),
                :secret_access_key => fetch(:aws_secret_access_key),
                :ec2_endpoint => "ec2.#{aws_region}.amazonaws.com",
-               :elb_endpoint => "elasticloadbalancing.#{aws_region}.amazonaws.com")
+               :elb_endpoint => "elasticloadbalancing.#{aws_region}.amazonaws.com"}
 
-    load_balancer = AWS::ELB.new.load_balancers.find { |elb| elb.dns_name.downcase == cname.downcase }
+    load_balancer = AWS::ELB.new(config).load_balancers.find { |elb| elb.dns_name.downcase == cname.downcase }
     raise "EC2 Load Balancer not found for #{name} in region #{aws_region}" if load_balancer.nil?
 
     hostnames = load_balancer.instances.collect do |instance|
