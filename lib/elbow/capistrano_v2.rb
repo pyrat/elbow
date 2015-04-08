@@ -4,10 +4,12 @@ require 'net/dns'
 Capistrano::Configuration.instance(:must_exist).load do
 
   def elastic_load_balancer(name, *args)
+    
+    cname = name
 
-    packet = Net::DNS::Resolver.start(name)
-    all_cnames= packet.answer.reject { |p| !p.instance_of? Net::DNS::RR::CNAME }
-    cname = all_cnames.find { |c| c.name == "#{name}."}.cname[0..-2]
+    #packet = Net::DNS::Resolver.start(name)
+    #all_cnames= packet.answer.reject { |p| !p.instance_of? Net::DNS::RR::CNAME }
+    #cname = all_cnames.find { |c| c.name == "#{name}."}.cname[0..-2]
 
     aws_region= fetch(:aws_region, 'us-east-1')
     AWS.config(:access_key_id => fetch(:aws_access_key_id),
